@@ -6,7 +6,6 @@ from .models import Employees, Review, AssignReview
 from .serializers import EmployeesSerializer, ReviewSerializer, AssignReviewSerializer
 
 class EmployeesApiView(APIView):
-  permission_classes = [IsAuthenticated]
 
   def get(self, request):
     employees = Employees.objects.all()
@@ -14,10 +13,16 @@ class EmployeesApiView(APIView):
     return Response(serializer.data)
 
   def post(self, request):
-    employees = EmployeesSerializer(data=request.data)
-    employees.is_valid(raise_exception=True)
-    employees.save()
-    return Response(employees.data, status=status.HTTP_201_CREATED)
+    serializer = EmployeesSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+  def delete(self, request):
+    employees = Employees.objects.all()
+    employees.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class ReviewApiView(APIView):
 
@@ -26,12 +31,22 @@ class ReviewApiView(APIView):
     serializer = ReviewSerializer(review, many=True)
     return Response(serializer.data)
 
-    
+  def post(self, request):
+    serializer = ReviewSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class AssignReviewApiView(APIView):
 
   def get(self, request):
-    review = AssignReview.objects.all()
-    serializer = AssignReviewSerializer(review, many=True)
+    assignreview = AssignReview.objects.all()
+    serializer = AssignReviewSerializer(assignreview, many=True)
     return Response(serializer.data)
+
+  def post(self, request):
+    serializer = AssignReviewSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
 
